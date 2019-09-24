@@ -114,15 +114,15 @@ module RegFile(clk, reset, ReadReg1, ReadReg2, WriteData, WriteReg, RegWrite, Re
 	endgenerate
 	
 	// initialize registers to 0
-	reg_32bit r1(q1, 32'H00000000, clk, reset);
-	reg_32bit r2(q2, 32'H00000000, clk, reset);
-	reg_32bit r3(q3, 32'H00000000, clk, reset);
-	reg_32bit r4(q4, 32'H00000000, clk, reset);
+	reg_32bit r1(q1, WriteData, clock[0], reset);
+	reg_32bit r2(q2, WriteData, clock[1], reset);
+	reg_32bit r3(q3, WriteData, clock[2], reset);
+	reg_32bit r4(q4, WriteData, clock[3], reset);
 	
-	writeToReg w1(q1, clock[0], WriteData);
-	writeToReg w2(q2, clock[1], WriteData);
-	writeToReg w3(q3, clock[2], WriteData);
-	writeToReg w4(q4, clock[3], WriteData);
+	// writeToReg w1(q1, clock[0], WriteData);
+	// writeToReg w2(q2, clock[1], WriteData);
+	// writeToReg w3(q3, clock[2], WriteData);
+	// writeToReg w4(q4, clock[3], WriteData);
 	
 	mux4_1 m0(ReadData1, q1, q2, q3, q4, ReadReg1);
 	mux4_1 m1(ReadData2, q1, q2, q3, q4, ReadReg2);
@@ -157,6 +157,13 @@ module testbench;
 		$monitor(, $time, " ReadData1=%b, ReadData2=%b, WriteData=%b", ReadData1, ReadData2, WriteData);
 		clk=1; reset=0; ReadReg1=2'b00; ReadReg2=2'b00; WriteReg=2'b00; RegWrite=1'b1;
 		WriteData = 32'HAFAFAFAF;
+		#10 reset = 1'b1; RegWrite = 1'b1;  WriteData = 32'hF0F0F0F0; WriteReg = 2'b00;
+		#10 RegWrite = 1'b1;  WriteData = 32'hF8F8F8F8; WriteReg = 2'b01;
+		#10 RegWrite = 1'b1;  WriteData = 32'hFAFAFAFA; WriteReg = 2'b10;
+		#10 RegWrite = 1'b1;  WriteData = 32'hFFFFFFFF; WriteReg = 2'b11;
+		#10 RegWrite = 1'b0;
+		#10 ReadReg1 = 2'b00; ReadReg2 = 2'b01;
+		#10 ReadReg1 = 2'b10; ReadReg2 = 2'b11;
 		#20 $finish;
 	end
 	
