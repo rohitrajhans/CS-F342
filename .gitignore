@@ -1,4 +1,4 @@
 *.vvp
 *.vcd
-lab1/*.vvp
-*/*.vcd
+/*.vvp
+/*.vcd
